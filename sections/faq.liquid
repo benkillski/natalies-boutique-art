@@ -1,0 +1,62 @@
+<h1 class="text-center">{{ section.settings.heading }}</h1>
+<br>
+
+{% assign counter = 1 %}
+<div class="faq">
+    {% for block in section.blocks %}
+        {% if block.type == "QA" %}
+            <div class="question">
+                <input type="checkbox" id="question-{{ counter }}" class="question-toggle">
+                <label for="question-{{ counter }}" class="question-label">{{ block.settings.title }}</label>
+                <div class="answer">
+                    {{ block.settings.answer }}
+                </div>
+            </div>
+            {% assign counter = counter | plus: 1 %}
+        {% elsif block.type == 'headline' %}
+            <h2>{{ block.settings.title }}</h2>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% schema %}
+{
+    "name": "customer question",
+    "settings": [
+        {
+            "type": "text",
+            "label": "heading for faq",
+            "id": "heading"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "QA",
+            "name": "Question/Answer",
+            "settings": [
+                {
+                    "type": "text",
+                    "label": "customer questions",
+                    "id": "title"
+                },
+                {
+                    "type": "richtext",
+                    "label": "answer for faq",
+                    "id": "answer"
+                }
+            ]
+        },
+        {
+            "type": "headline",
+            "name": "headline",
+            "settings": [
+                {
+                    "type": "text",
+                    "label": "headline",
+                    "id": "title"
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}
