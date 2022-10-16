@@ -1,0 +1,86 @@
+<div style="text-align: center">
+    <h2>{{ section.settings.heading }} 
+        {% if section.settings.instagram-handle != blank %}
+            <a href="{{ section.settings.instagram-url }}" target="_blank">@{{ section.settings.instagram-handle }}</a>
+        {% endif %}
+    </h2>
+</div>
+
+<div class="instagram-gallery">
+    <script>
+        for(var i = 0; i < {{ section.settings.max-photos }}; i++)
+        {
+            $(".instagram-gallery").append("<div class='custom-block'></div>");
+        }
+    </script>
+</div>
+
+<style>
+    .instagram-gallery {
+        
+        width: 100%;
+        height: 100%;
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        margin: 20px 0;
+    }
+    .instagram-image {
+        width: 100%;
+        height: 100%
+    }
+</style>
+
+{% comment %}<script src="{{ 'instagram-gallery.js' | asset_url }}"></script> {% endcomment %}
+
+{% schema %}
+    {
+        "name": "Instagram Photo Gallery",
+        "settings": [
+            {
+                "type": "text",
+                "label": "Gallery Heading",
+                "id": "heading"
+            },
+            {
+                "type": "text",
+                "label": "Instagram Handle",
+                "id": "instagram-handle"
+            },
+            {
+                "type": "text",
+                "label": "Instagram Profile URL",
+                "id": "instagram-url"
+            },
+            {
+                "type": "number",
+                "label": "Max Photos",
+                "id": "max-photos"
+            }
+        ],
+        "blocks": [
+            {
+                "name": "instagram_image",
+                "type": "instagram_image",
+                "settings": [
+                    {
+                        "type": "image_picker",
+                        "id": "instagram_image",
+                        "label": "instagram_image"
+                    }
+                ]
+            }
+        ],
+        "presets": [
+            {
+                "name": "Instagram Gallery"
+            }
+        ]
+    }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

@@ -2966,6 +2966,11 @@ details-disclosure > details {
   border-radius: 8px;
   overflow: hidden;
 }
+
+.question {
+  margin: 5px 20px;
+}
+
 /* hide checkbox */
 .faq .question-toggle {
   display: none;

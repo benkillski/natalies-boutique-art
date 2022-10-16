@@ -10,7 +10,7 @@
       "form": {
         "type": "faq",
         "settings": {
-          "heading": "",
+          "heading": "FAQ",
           "heading_size": "h1",
           "color_scheme": "background-1",
           "padding_top": 36,
