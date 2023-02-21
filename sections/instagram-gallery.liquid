@@ -1,82 +1,143 @@
+{% comment %} Section Heading {% endcomment %}
 <div style="text-align: center">
-    <h2>{{ section.settings.heading }} 
-        {% if section.settings.instagram-handle != blank %}
-            <a href="{{ section.settings.instagram-url }}" target="_blank">@{{ section.settings.instagram-handle }}</a>
-        {% endif %}
-    </h2>
+  <h2 class="instagram-photo-gallery-header">
+    {{ section.settings.heading }}
+    {% if section.settings['instagram-handle'] != blank %}
+      <a href="{{ section.settings.instagram-url }}" target="_blank">@{{ section.settings['instagram-handle'] }}</a>
+    {% endif %}
+  </h2>
 </div>
 
+{% comment %} Instagram Photo Gallery Container and Logic/Script {% endcomment %}
 <div class="instagram-gallery">
-    <script>
-        for(var i = 0; i < {{ section.settings.max-photos }}; i++)
-        {
-            $(".instagram-gallery").append("<div class='custom-block'></div>");
-        }
-    </script>
+  <script type="module">
+    {% assign instagram_api_key = settings.instagram_api_key %}
+    var token = '{{ instagram_api_key }}';
+
+    var fields = 'id,media_type,media_url,thumbnail_url,timestamp,permalink,caption';
+    var limit = 8;
+
+    $.ajax({
+      type: 'GET',
+      url: 'https://graph.instagram.com/me/media?fields=' + fields + '&access_token=' + token + '&limit=' + limit,
+      crossDomain: true,
+      success: function (response) {
+
+        $.each(response.data, function (index, obj) {
+          if (obj.media_type == 'VIDEO') {
+            $('.instagram-gallery').append(
+              `<div class='custom-block'>
+                                <a href="${obj.permalink}" target="_blank">
+                                    <p class="caption">${obj.caption.slice(0, 100) + '...'}</p>
+                                    <div class="overlay">
+                                        <img class='instagram-image' src="${obj.thumbnail_url}">
+                                    </div>
+                                </a>
+                            </div>`
+            );
+          } else if (obj.media_type == 'IMAGE' || obj.media_type == 'CAROUSEL_ALBUM') {
+            $('.instagram-gallery').append(
+              `<div class='custom-block'>
+                                <a href="${obj.permalink}" target="_blank">
+                                    <p class="caption">${obj.caption.slice(0, 100) + '...'}</p>
+                                    <div class="overlay">
+                                        <img class='instagram-image' src="${obj.media_url}">
+                                    </div>
+                                </a>
+                            </div>`
+            );
+          }
+        });
+      },
+
+      dataType: 'jsonp', //set to JSONP, is a callback
+    });
+  </script>
 </div>
 
 <style>
-    .instagram-gallery {
-        
-        width: 100%;
-        height: 100%;
-        display: flex;
-        gap: 10px;
-        padding: 10px;
-        margin: 20px 0;
+  @import url('http://fonts.cdnfonts.com/css/halimun');
+
+  .instagram-photo-gallery-header {
+    font-family: 'Halimun', sans-serif;
+  }
+  .instagram-photo-gallery-header a {
+    font-family: 'sans-serif';
+    color: #9e6457;
+  }
+  .instagram-gallery {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    margin: 20px 0;
+  }
+  .custom-block {
+    width: 12.5%;
+    position: relative;
+  }
+  .caption {
+    z-index: 9;
+    position: absolute;
+    color: white;
+    display: none;
+    padding: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .custom-block:hover .caption {
+    display: block;
+  }
+  .overlay {
+    filter: brightness(100%);
+    transition: 0.5s;
+    width: 100%;
+    height: 100%;
+  }
+  .custom-block:hover .overlay {
+    filter: brightness(50%);
+  }
+  .instagram-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media only screen and (max-width: 1255px) {
+    .custom-block:hover .caption {
+      display: none;
     }
-    .instagram-image {
-        width: 100%;
-        height: 100%
-    }
+  }
 </style>
 
-{% comment %}<script src="{{ 'instagram-gallery.js' | asset_url }}"></script> {% endcomment %}
-
 {% schema %}
+{
+  "name": "Instagram Photo Gallery",
+  "settings": [
     {
-        "name": "Instagram Photo Gallery",
-        "settings": [
-            {
-                "type": "text",
-                "label": "Gallery Heading",
-                "id": "heading"
-            },
-            {
-                "type": "text",
-                "label": "Instagram Handle",
-                "id": "instagram-handle"
-            },
-            {
-                "type": "text",
-                "label": "Instagram Profile URL",
-                "id": "instagram-url"
-            },
-            {
-                "type": "number",
-                "label": "Max Photos",
-                "id": "max-photos"
-            }
-        ],
-        "blocks": [
-            {
-                "name": "instagram_image",
-                "type": "instagram_image",
-                "settings": [
-                    {
-                        "type": "image_picker",
-                        "id": "instagram_image",
-                        "label": "instagram_image"
-                    }
-                ]
-            }
-        ],
-        "presets": [
-            {
-                "name": "Instagram Gallery"
-            }
-        ]
+      "type": "text",
+      "label": "Gallery Heading",
+      "id": "heading"
+    },
+    {
+      "type": "text",
+      "label": "Instagram Handle",
+      "id": "instagram-handle"
+    },
+    {
+      "type": "text",
+      "label": "Instagram Profile URL",
+      "id": "instagram-url"
     }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Instagram Gallery"
+    }
+  ]
+}
 {% endschema %}
 
 {% stylesheet %}
